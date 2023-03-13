@@ -1,7 +1,7 @@
 const NUMBER_OF_INTEGERS = [8000, 16000, 32000, 64000, 128000];
 const NUMBER_OF_STRINGS = [2000, 4000, 8000, 16000, 32000];
-/* const NUMBER_OF_INTEGERS = [8000, 16000];
-const NUMBER_OF_STRINGS = [2000]; */
+//const NUMBER_OF_INTEGERS = [8000, 16000];
+//const NUMBER_OF_STRINGS = [2000]; 
 
 function App() {
   const [isLoadingIntegers, setIsLoadingIntegers] = React.useState(false);
@@ -20,7 +20,7 @@ function App() {
   //Comb sort
   const [bubbleSecondIntegersImprouved, setBubbleSecondIntegersImprouved] =
     React.useState([0, 0, 0, 0, 0]);
-  //shell sort
+  //Binary search sort
   const [insertionIntegersImprouved, setInsertionIntegersImprouved] =
     React.useState([0, 0, 0, 0, 0]);
 
@@ -33,7 +33,15 @@ function App() {
   const [bubbleStringsResuts, setBubbleStringsResults] = React.useState([
     0, 0, 0, 0, 0,
   ]);
-
+React.useEffect(() => {
+    console.log('Component did mount or update');
+    // Perform side effects here
+    return () => {
+      console.log(bubbleIntegers);
+      console.log("unmout")
+      // Clean up side effects here
+    };
+  });
   /* const lab1 = () => {
     console.log("lab1 called");
 
@@ -48,7 +56,9 @@ function App() {
     return endTime - startTime;
   };
 
-  const selectionSortIntegers = (arr) => {
+  const selectionSortIntegers = (arr2) => {
+    let arr = arr2;
+
     for (let i = 0; i < arr.length - 1; i++) {
       let min = i;
       for (let j = i + 1; j < arr.length; j++) {
@@ -63,8 +73,10 @@ function App() {
     }
   };
 
-  const insertionSortIntegers = (arr) => {
+  const insertionSortIntegers = (arr2) => {
+    let arr = arr2;
     for (let i = 1; i < arr.length; i++) {
+        
       let j = i - 1;
       let temp = arr[i];
       while (j >= 0 && arr[j] > temp) {
@@ -72,13 +84,15 @@ function App() {
         j--;
       }
       arr[j + 1] = temp;
+      
     }
     if (!check_if_sorted(arr)) {
       console.error("NOT SORTED!!!");
     }
   };
 
-  const bubbleSortIntegers = (arr) => {
+  const bubbleSortIntegers = (arr2) => {
+    let arr = arr2;
     for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr.length - i - 1; j++) {
         if (arr[j] > arr[j + 1]) {
@@ -133,7 +147,8 @@ function App() {
       console.error("NOT SORTED!!! BUBBLE");
     }
   };
-  const bubbleSortIntegersImprouved = (arr) => {
+  const bubbleSortIntegersImprouved = (arr2) => {
+    let arr = arr2;
     let start = 0,
       end = arr.length,
       swapped = true;
@@ -169,70 +184,108 @@ function App() {
     }
   };
   const insertionSortImprouved = (arr) => {
-    let n = arr.length;
-
-    for (let gap = Math.floor(n / 2); gap > 0; gap = Math.floor(gap / 2)) {
-      for (let i = gap; i < n; i += 1) {
-        let temp = arr[i];
-
-        let j;
-        for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
-          arr[j] = arr[j - gap];
+    
+    function binarySearch(a, item, low, high)
+{
+  
+    if (high <= low)
+        return (item > a[low]) ?
+                       (low + 1) : low;
+  
+    let mid = Math.floor((low + high) / 2);
+  
+    if(item == a[mid])
+        return mid + 1;
+  
+    if(item > a[mid])
+        return binarySearch(a, item,
+                            mid + 1, high);
+          
+    return binarySearch(a, item, low,
+                            mid - 1);
+}
+for (let i = 1; i < arr.length; i++)
+        {
+            let j = i - 1;
+            let x = arr[i];
+  
+            // Find location to insert
+            // using binary search
+            let loc = Math.abs(
+                binarySearch(arr, x,
+                                    0, j));
+  
+            // Shifting array to one
+            // location right
+             
+            while (j >= loc)
+            {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+  
+            // Placing element at its
+            // correct location
+            arr[j+1] = x;
         }
 
-        arr[j] = temp;
-      }
-    }
+    
     if (!check_if_sorted(arr)) {
       console.error("NOT SORTED!!!");
     }
   };
   const bubbleSortIntegersSecondImprouvement = (arr) => {
-    function is_array_sorted(arr) {
-      var sorted = true;
-      for (var i = 0; i < arr.length - 1; i++) {
-        if (arr[i] > arr[i + 1]) {
-          sorted = false;
-          break;
-        }
-      }
-      return sorted;
+    function getNextGap(gap)
+    {
+        // Shrink gap by Shrink factor
+        gap = parseInt((gap*10)/13, 10);
+        if (gap < 1)
+            return 1;
+        return gap;
     }
-
-    var iteration_count = 0;
-    var gap = arr.length - 2;
-    var decrease_factor = 1.25;
-
-    // Repeat iterations Until array is not sorted
-
-    while (!is_array_sorted(arr)) {
-      // If not first gap  Calculate gap
-      if (iteration_count > 0)
-        gap = gap == 1 ? gap : Math.floor(gap / decrease_factor);
-
-      // Set front and back elements and increment to a gap
-      var front = 0;
-      var back = gap;
-      while (back <= arr.length - 1) {
-        // Swap the elements if they are not ordered
-
-        if (arr[front] > arr[back]) {
-          var temp = arr[front];
-          arr[front] = arr[back];
-          arr[back] = temp;
+    let n = arr.length;
+   
+        // initialize gap
+        let gap = n;
+   
+        // Initialize swapped as true to
+        // make sure that loop runs
+        let swapped = true;
+   
+        // Keep running while gap is more than
+        // 1 and last iteration caused a swap
+        while (gap != 1 || swapped == true)
+        {
+            // Find next gap
+            gap = getNextGap(gap);
+   
+            // Initialize swapped as false so that we can
+            // check if swap happened or not
+            swapped = false;
+   
+            // Compare all elements with current gap
+            for (let i=0; i<n-gap; i++)
+            {
+                if (arr[i] > arr[i+gap])
+                {
+                    // Swap arr[i] and arr[i+gap]
+                    let temp = arr[i];
+                    arr[i] = arr[i+gap];
+                    arr[i+gap] = temp;
+   
+                    // Set swapped
+                    swapped = true;
+                }
+            }
         }
-
-        // Increment and re-run swapping
-
-        front += 1;
-        back += 1;
-      }
-      iteration_count += 1;
+    
+    if (!check_if_sorted(arr)) {
+      console.error("NOT SORTED!!!");
     }
   };
 
   const sortForIntegers = () => {
-    setIsLoadingIntegers(true);
+    //setIsLoadingIntegers(true);
     console.log("method called");
     let selectionMethodResuts = [];
     let insertionMethodResults = [];
@@ -240,47 +293,48 @@ function App() {
     let bubbleMethodImprouvedResuts = [];
     let insertionIntegersImprouvedResults = [];
     let bubbleMethodSecondImprouvedResults = [];
-    NUMBER_OF_INTEGERS.map((length) => {
+     NUMBER_OF_INTEGERS.map((length) => {
       let arr = generateIntegerArray(length);
       // selection/insertion/Bubble
-      console.log(arr);
+      
 
-      selectionMethodResuts.push(
+       selectionMethodResuts.push(
         calculateExecutionTime(arr, selectionSortIntegers)
       );
+        arr = generateIntegerArray(length);
       insertionMethodResults.push(
         calculateExecutionTime(arr, insertionSortIntegers)
       );
+       arr = generateIntegerArray(length);
       bubbleMethodResults.push(calculateExecutionTime(arr, bubbleSortIntegers));
+       arr = generateIntegerArray(length);
       bubbleMethodImprouvedResuts.push(
         calculateExecutionTime(arr, bubbleSortIntegersImprouved)
       );
+       let arr3 = generateIntegerArray(length);
       insertionIntegersImprouvedResults.push(
-        calculateExecutionTime(arr, insertionSortImprouved)
+        calculateExecutionTime(arr3, insertionSortImprouved)
       );
+       let arr4 = generateIntegerArray(length);
       bubbleMethodSecondImprouvedResults.push(
-        calculateExecutionTime(arr, bubbleSortIntegersSecondImprouvement)
+        calculateExecutionTime(arr4, bubbleSortIntegersSecondImprouvement)
       );
     });
-    console.log("hello?");
-    console.log(selectionMethodResuts);
-    console.log(insertionMethodResults);
-    console.log(bubbleMethodResults);
-    setIsLoadingIntegers(false);
+    setInsertionIntegers(insertionMethodResults);
+    //setIsLoadingIntegers(false);
     setBubbleIntegers(bubbleMethodResults);
     setSelectionIntegers(selectionMethodResuts);
-    setInsertionIntegers(insertionMethodResults);
     setBubbleIntegersImprouved(bubbleMethodImprouvedResuts);
     setInsertionIntegersImprouved(insertionIntegersImprouvedResults);
     setBubbleSecondIntegersImprouved(bubbleMethodSecondImprouvedResults);
   };
-  const sortForStrings = () => {
+  const sortForStrings = async () => {
     console.log("method called");
-    setIsLoadingStrings(true);
+    //setIsLoadingStrings(true);
     let selectionMethodResuts = [];
     let insertionMethodResults = [];
     let bubbleMethodResults = [];
-    NUMBER_OF_STRINGS.map((length) => {
+     NUMBER_OF_STRINGS.map((length) => {
       let strings = generateStringArray(length);
       selectionMethodResuts.push(
         calculateExecutionTime(strings, selectionSortStrings)
@@ -292,7 +346,7 @@ function App() {
         calculateExecutionTime(strings, bubbleSortStrings)
       );
     });
-    setIsLoadingStrings(false);
+    //setIsLoadingStrings(false);
     setBubbleStringsResults(bubbleMethodResults);
     setInsertionStringsResults(insertionMethodResults);
     setSelectionStringsResults(selectionMethodResuts);
@@ -336,7 +390,7 @@ function App() {
 
       <h2>For Strings :</h2>
       {isLoadingStrings && <div className="loader"></div>}
-      <button onClick={sortForStrings}>Sort Integers in All methods :</button>
+      <button onClick={sortForStrings}>Sort Integers in All methods : (~32 second wait)</button>
       <h6>Selection Method : </h6>
       <p>selectionMethodResuts: </p>
       {selectionStringsResults.map((result, index) => (
@@ -383,7 +437,7 @@ function check_if_sorted_strings(str) {
   return is_sorted;
 }
 
-function generateIntegerArray(length) {
+ function generateIntegerArray(length) {
   let arr = [];
   for (let i = 0; i < length; i++) {
     arr.push(Math.floor(Math.random() * 100)); // generates a random integer between 0 and 99
